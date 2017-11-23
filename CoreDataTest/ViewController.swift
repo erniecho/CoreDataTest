@@ -16,7 +16,7 @@ class ViewController: UIViewController, UITableViewDataSource {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         title = "\"The List\""
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "DefaultCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,16 +31,26 @@ class ViewController: UIViewController, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell")!
-        return cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
+        cell?.textLabel!.text = names[indexPath.row]
+        return cell!
     }
     @IBAction func addName(_ sender: AnyObject) {
-        _ = UIAlertController(title: "New name", message: "Add a new name", preferredStyle: .alert)
-        _ = UIAlertAction(title: "Save", style: .default, handler: <#T##((UIAlertAction) -> Void)?##((UIAlertAction) -> Void)?##(UIAlertAction) -> Void#>)
+        let alert = UIAlertController(title: "New name", message: "Add a new name", preferredStyle: .alert)
+        let saveAction = UIAlertAction(title: "Save", style: .default) {(action: UIAlertAction!) -> Void in
         
-        let textField = alert?.textField![0] as! UITextField
-        self.names.append(textField.text)
+            let textField = alert.textFields![0] as UITextField;
+        self.names.append(textField.text!)
         self.tableView.reloadData()
+        }
+    
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) {(action: UIAlertAction!) -> Void in
+        }
+        alert.addTextField { (textField: UITextField!) -> Void in
+        }
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 
