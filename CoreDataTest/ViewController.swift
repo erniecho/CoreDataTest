@@ -11,7 +11,7 @@ import CoreData
 
 class ViewController: UIViewController, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
-    var people = [NSManagedObject]()
+    var people: [NSManagedObject] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,21 +56,33 @@ class ViewController: UIViewController, UITableViewDataSource {
     }
     
     func saveName(name: String){
-       //1
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let managedContext = appDelegate.managedObjectContext!
-        //2
-        let person = NSManagedObject(entity: entity!, insertIntoManagedObjectContext:managedContext)
-        //3
-        person.setValue(name, forKey: "name")
-        //4
-        var error: NSError?
-        if !managedContext.save(&error) {
-            print("Could not save \(error!), \(String(describing: error?.userInfo))");
+        guard let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate else {
+                return
         }
-        //5
-        people.append(person)
+        
+        // 1
+        let managedContext =
+            appDelegate.persistentContainer.viewContext
+        
+        // 2
+        let entity =
+            NSEntityDescription.entity(forEntityName: "Person",
+                                       in: managedContext)!
+        
+        let person = NSManagedObject(entity: entity,
+                                     insertInto: managedContext)
+        
+        // 3
+        person.setValue(name, forKeyPath: "name")
+        
+        // 4
+        do {
+            try managedContext.save()
+            people.append(person)
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
     }
 }
 
