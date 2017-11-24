@@ -42,7 +42,7 @@ class ViewController: UIViewController, UITableViewDataSource {
         let saveAction = UIAlertAction(title: "Save", style: .default) {(action: UIAlertAction!) -> Void in
         
         let textField = alert.textFields![0] as UITextField;
-            self.saveName(name: textField.text!)
+        self.saveName(name: textField.text!)
         self.tableView.reloadData()
         }
     
@@ -82,6 +82,30 @@ class ViewController: UIViewController, UITableViewDataSource {
             people.append(person)
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //1
+        guard let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate else {
+                return
+        }
+        
+        let managedContext =
+            appDelegate.persistentContainer.viewContext
+        
+        //2
+        let fetchRequest =
+            NSFetchRequest<NSManagedObject>(entityName: "Person")
+        
+        //3
+        do {
+            people = try managedContext.fetch(fetchRequest)
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
         }
     }
 }
